@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from recomendador import recomendar_peliculas, buscar_peliculas_por_titulo, guardar_busqueda_temporal, agregar_usuario, borrar_historial
+from recomendador import  recomendar_peliculas, obtener_recomendaciones_pasadas ,recomendar_peliculas, buscar_peliculas_por_titulo, guardar_busqueda_temporal, agregar_usuario, borrar_historial
 from database import conectar_db
 
 def obtener_peliculas():
@@ -26,9 +26,16 @@ def actualizar_usuarios():
 
 def mostrar_recomendaciones():
     usuario_id = int(usuario_combobox.get().split()[0])
-    recomendaciones = recomendar_peliculas(usuario_id)
+    recomendaciones_actuales = recomendar_peliculas(usuario_id)
+    recomendaciones_pasadas = obtener_recomendaciones_pasadas(usuario_id)
+    
     recomendaciones_text.delete('1.0', tk.END)
-    for rec in recomendaciones:
+    recomendaciones_text.insert(tk.END, "Recomendaciones Actuales:\n")
+    for rec in recomendaciones_actuales:
+        recomendaciones_text.insert(tk.END, f"{rec[1]}\n")
+    
+    recomendaciones_text.insert(tk.END, "\nRecomendaciones Pasadas:\n")
+    for rec in recomendaciones_pasadas:
         recomendaciones_text.insert(tk.END, f"{rec[1]}\n")
 
 def realizar_busqueda():
@@ -75,7 +82,7 @@ busqueda_entry.grid(row=1, column=1, padx=10, pady=10)
 buscar_button = tk.Button(app, text="Buscar", command=realizar_busqueda)
 buscar_button.grid(row=1, column=2, padx=10, pady=10)
 
-# Listbox para mostrar resultados de búsqueda
+# Listbox para mostrar resultados de búsquedaas
 resultados_listbox = tk.Listbox(app, width=50, height=10)
 resultados_listbox.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
 
