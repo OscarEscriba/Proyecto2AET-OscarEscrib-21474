@@ -6,15 +6,7 @@ def conectar_db():
 def crear_tablas():
     conn = conectar_db()
     cursor = conn.cursor()
-
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Peliculas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        titulo TEXT,
-        genero TEXT,
-        sinopsis TEXT
-    )
-    ''')
+    
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS Peliculas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,7 +52,6 @@ def crear_tablas():
         FOREIGN KEY (peliculaId) REFERENCES Peliculas(id)
     )
     ''')
-
 
     conn.commit()
     conn.close()
@@ -137,4 +128,3 @@ def insertar_datos_iniciales():
 # Crear tablas y datos iniciales
 crear_tablas()
 insertar_datos_iniciales()
-

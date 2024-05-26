@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from recomendador import recomendar_peliculas, buscar_peliculas_por_titulo, guardar_busqueda_temporal, agregar_usuario, borrar_historial, obtener_recomendaciones_pasadas
+from recomendador import recomendar_peliculas, buscar_peliculas_por_titulo, guardar_busqueda_temporal, agregar_usuario, borrar_historial
 from database import conectar_db
 
 def obtener_peliculas():
@@ -24,8 +24,9 @@ def actualizar_usuarios():
     usuario_combobox['values'] = [f"{u[0]} - {u[1]}" for u in usuarios]
     usuario_combobox.set("Seleccione un usuario")
 
-def mostrar_recomendaciones(usuario_id):
-    recomendaciones = obtener_recomendaciones_pasadas(usuario_id)
+def mostrar_recomendaciones():
+    usuario_id = int(usuario_combobox.get().split()[0])
+    recomendaciones = recomendar_peliculas(usuario_id)
     recomendaciones_text.delete('1.0', tk.END)
     for rec in recomendaciones:
         recomendaciones_text.insert(tk.END, f"{rec[1]}\n")
@@ -39,7 +40,6 @@ def realizar_busqueda():
         resultados_listbox.insert(tk.END, f"{res[0]} - {res[1]}")
     if resultados:
         guardar_busqueda_temporal(usuario_id, resultados[0][0])
-        mostrar_recomendaciones(usuario_id)  # Actualizar recomendaciones después de guardar búsqueda
 
 def registrar_usuario():
     nombre = nuevo_usuario_entry.get()
@@ -54,13 +54,7 @@ def registrar_usuario():
 def limpiar_historial():
     usuario_id = int(usuario_combobox.get().split()[0])
     borrar_historial(usuario_id)
-    recomendaciones_text.delete('1.0', tk.END)  # Limpiar área de texto de recomendaciones
     messagebox.showinfo("Historial", "Historial de recomendaciones borrado exitosamente.")
-
-def usuario_seleccionado(event):
-    if usuario_combobox.get() != "Seleccione un usuario":
-        usuario_id = int(usuario_combobox.get().split()[0])
-        mostrar_recomendaciones(usuario_id)
 
 app = tk.Tk()
 app.title("Sistema de Recomendaciones de Películas")
@@ -70,7 +64,6 @@ usuarios = obtener_usuarios()
 usuario_combobox = ttk.Combobox(app, values=[f"{u[0]} - {u[1]}" for u in usuarios])
 usuario_combobox.grid(row=0, column=1, padx=10, pady=10)
 usuario_combobox.set("Seleccione un usuario")
-usuario_combobox.bind("<<ComboboxSelected>>", usuario_seleccionado)
 
 # Campo de búsqueda
 busqueda_label = tk.Label(app, text="Buscar película:")
@@ -87,7 +80,7 @@ resultados_listbox = tk.Listbox(app, width=50, height=10)
 resultados_listbox.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
 
 # Botón para mostrar recomendaciones
-recomendar_button = tk.Button(app, text="Mostrar Recomendaciones", command=lambda: mostrar_recomendaciones(int(usuario_combobox.get().split()[0])))
+recomendar_button = tk.Button(app, text="Mostrar Recomendaciones", command=mostrar_recomendaciones)
 recomendar_button.grid(row=3, column=1, padx=10, pady=10)
 
 # Área de texto para mostrar recomendaciones
@@ -109,3 +102,4 @@ limpiar_button = tk.Button(app, text="Limpiar Historial", command=limpiar_histor
 limpiar_button.grid(row=6, column=1, padx=10, pady=10)
 
 app.mainloop()
+
